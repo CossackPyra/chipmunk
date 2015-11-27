@@ -49,6 +49,11 @@ func (segment *SegmentShape) Moment(mass float32) vect.Float {
 	return vect.Float(mass) * (vect.DistSqr(segment.B, segment.A)/12.0 + vect.LengthSqr(offset))
 }
 
+// Public backdoor
+func (segment *SegmentShape) Update(xf transform.Transform) AABB {
+	segment.update(xf)
+}
+
 //Called to update N, Tn, Ta, Tb and the the bounding box.
 func (segment *SegmentShape) update(xf transform.Transform) AABB {
 	a := xf.TransformVect(segment.A)
