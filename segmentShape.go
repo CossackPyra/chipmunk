@@ -51,7 +51,7 @@ func (segment *SegmentShape) Moment(mass float32) vect.Float {
 
 // Public backdoor
 func (segment *SegmentShape) Update(xf transform.Transform) AABB {
-	segment.update(xf)
+	return segment.update(xf)
 }
 
 //Called to update N, Tn, Ta, Tb and the the bounding box.
