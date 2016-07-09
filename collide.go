@@ -1,9 +1,10 @@
 package chipmunk
 
 import (
-	"github.com/CossackPyra/chipmunk/vect"
 	"log"
 	"math"
+
+	"github.com/CossackPyra/chipmunk/vect"
 	//"fmt"
 )
 
@@ -36,7 +37,7 @@ var collisionHandlers = [numShapes][numShapes]collisionHandler{
 	},
 }
 
-func collide(contacts []*Contact, sA, sB *Shape) int {
+func Collide(contacts []*Contact, sA, sB *Shape) int {
 	contacts = contacts[:MaxPoints]
 	stA := sA.ShapeType()
 	stB := sB.ShapeType()

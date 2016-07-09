@@ -1,3 +1,6 @@
+I took https://github.com/vova616/chipmunk
+and made some methods public like collide
+
 ## Chipmunk:
 Pure Go Physics engine based on [chipmunk-physics].
 

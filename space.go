@@ -3,6 +3,7 @@ package chipmunk
 import (
 	"errors"
 	"fmt"
+
 	"github.com/CossackPyra/chipmunk/transform"
 	"github.com/CossackPyra/chipmunk/vect"
 	//"github.com/davecgh/go-spew/spew"
@@ -371,7 +372,7 @@ func (space *Space) SpacePointQueryFirst(point vect.Vect, layers Layer, group Gr
 				return
 			}
 			contacts := space.pullContactBuffer()
-			numContacts := collide(contacts, shapeA, shapeB)
+			numContacts := Collide(contacts, shapeA, shapeB)
 			if numContacts <= 0 {
 				space.pushContactBuffer(contacts)
 				return
@@ -404,7 +405,7 @@ func (space *Space) SpacePointQuery(point vect.Vect, layers Layer, group Group, 
 				return
 			}
 			contacts := space.pullContactBuffer()
-			numContacts := collide(contacts, shapeA, shapeB)
+			numContacts := Collide(contacts, shapeA, shapeB)
 			if numContacts <= 0 {
 				space.pushContactBuffer(contacts)
 				return
@@ -629,7 +630,7 @@ func SpaceCollideShapes(a, b *Shape, space *Space) {
 	// Narrow-phase collision detection.
 	contacts := space.pullContactBuffer()
 
-	numContacts := collide(contacts, a, b)
+	numContacts := Collide(contacts, a, b)
 	if numContacts <= 0 {
 		space.pushContactBuffer(contacts)
 		return // Shapes are not colliding.
