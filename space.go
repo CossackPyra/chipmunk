@@ -371,10 +371,10 @@ func (space *Space) SpacePointQueryFirst(point vect.Vect, layers Layer, group Gr
 			if !checkSensors && shapeB.IsSensor {
 				return
 			}
-			contacts := space.pullContactBuffer()
+			contacts := space.PullContactBuffer()
 			numContacts := Collide(contacts, shapeA, shapeB)
 			if numContacts <= 0 {
-				space.pushContactBuffer(contacts)
+				space.PushContactBuffer(contacts)
 				return
 			}
 			shape = shapeB
@@ -404,10 +404,10 @@ func (space *Space) SpacePointQuery(point vect.Vect, layers Layer, group Group, 
 			if !checkSensors && shapeB.IsSensor {
 				return
 			}
-			contacts := space.pullContactBuffer()
+			contacts := space.PullContactBuffer()
 			numContacts := Collide(contacts, shapeA, shapeB)
 			if numContacts <= 0 {
-				space.pushContactBuffer(contacts)
+				space.PushContactBuffer(contacts)
 				return
 			}
 			shapes = append(shapes, shapeB)
@@ -628,11 +628,11 @@ func SpaceCollideShapes(a, b *Shape, space *Space) {
 	//}
 
 	// Narrow-phase collision detection.
-	contacts := space.pullContactBuffer()
+	contacts := space.PullContactBuffer()
 
 	numContacts := Collide(contacts, a, b)
 	if numContacts <= 0 {
-		space.pushContactBuffer(contacts)
+		space.PushContactBuffer(contacts)
 		return // Shapes are not colliding.
 	}
 
@@ -657,7 +657,7 @@ func SpaceCollideShapes(a, b *Shape, space *Space) {
 	}
 	arb.update(a, b, contacts, numContacts)
 	if oldContacts != nil {
-		space.pushContactBuffer(oldContacts)
+		space.PushContactBuffer(oldContacts)
 	}
 
 	space.cachedArbiters[arbHashID] = arb
@@ -839,7 +839,7 @@ func (space *Space) RemoveShape(shape *Shape) {
 	shape.ShapeClass = nil
 }
 
-func (space *Space) pullContactBuffer() (contacts []*Contact) {
+func (space *Space) PullContactBuffer() (contacts []*Contact) {
 	if len(space.ContactBuffer) > 0 {
 		contacts, space.ContactBuffer = space.ContactBuffer[len(space.ContactBuffer)-1], space.ContactBuffer[:len(space.ContactBuffer)-1]
 	} else {
@@ -856,6 +856,6 @@ func (space *Space) pullContactBuffer() (contacts []*Contact) {
 	return
 }
 
-func (space *Space) pushContactBuffer(contacts []*Contact) {
+func (space *Space) PushContactBuffer(contacts []*Contact) {
 	space.ContactBuffer = append(space.ContactBuffer, contacts)
 }
