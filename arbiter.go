@@ -2,6 +2,7 @@ package chipmunk
 
 import (
 	"fmt"
+
 	"github.com/CossackPyra/chipmunk/transform"
 	"github.com/CossackPyra/chipmunk/vect"
 
@@ -145,9 +146,9 @@ func (arb *Arbiter) preStep(inv_dt, slop, bias vect.Float) {
 		con.tMass = 1.0 / value
 
 		// Calculate the target bias velocity.
-		ds := con.dist + slop
+		ds := con.Dist + slop
 		if 0 > ds {
-			con.bias = -bias * inv_dt * (con.dist + slop)
+			con.bias = -bias * inv_dt * (con.Dist + slop)
 		} else {
 			con.bias = 0
 		}
@@ -177,7 +178,7 @@ func (arb *Arbiter) preStep2(inv_dt, slop, bias vect.Float) {
 		con.tMass = 1.0 / k_scalar(a, b, con.r1, con.r2, vect.Perp(con.n))
 
 		// Calculate the target bias velocity.
-		con.bias = -bias * inv_dt * vect.FMin(0.0, con.dist+slop)
+		con.bias = -bias * inv_dt * vect.FMin(0.0, con.Dist+slop)
 		con.jBias = 0.0
 		//con.jtAcc = 0
 		//con.jnAcc = 0
