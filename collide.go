@@ -19,7 +19,7 @@ var collisionHandlers = [numShapes][numShapes]collisionHandler{
 	},
 	ShapeType_Segment: [numShapes]collisionHandler{
 		ShapeType_Circle:  nil,
-		ShapeType_Segment: nil,
+		ShapeType_Segment: segment2segment,
 		ShapeType_Polygon: segment2polygon,
 		ShapeType_Box:     segment2box,
 	},
@@ -99,6 +99,20 @@ func circle2polygon(contacts []*Contact, sA, sB *Shape) int {
 	}
 
 	return circle2polyFunc(contacts, circle, poly)
+}
+
+func segment2segment(contacts []*Contact, sA, sB *Shape) int {
+	segmentA, ok := sA.ShapeClass.(*SegmentShape)
+	if !ok {
+		log.Printf("Error: ShapeA not a SegmentShape!")
+		return 0
+	}
+	segmentB, ok := sB.ShapeClass.(*SegmentShape)
+	if !ok {
+		log.Printf("Error: ShapeB not a SegmentShape!")
+		return 0
+	}
+	return seg2segFunc(contacts, segmentA, segmentB)
 }
 
 func segment2polygon(contacts []*Contact, sA, sB *Shape) int {
@@ -442,6 +456,48 @@ func findPoinsBehindSeg(contacts []*Contact, num *int, seg *SegmentShape, poly *
 			}
 		}
 	}
+}
+
+type Line struct {
+	a, b, c vect.Float
+}
+
+func (line *Line) Setup(seg *SegmentShape) {
+	line.a = seg.Tn.X
+	line.b = seg.Tn.Y
+	line.c = -vect.Dot(seg.Tn, seg.Ta)
+}
+
+func LineLine(l1, l2 *Line) vect.Vect {
+	md := -(l1.a*l2.b - l2.a*l1.b)
+	x := (l1.c*l2.b - l2.c*l1.b) / md
+	y := (l1.a*l2.c - l2.a*l1.c) / md
+	return vect.Vect{x, y}
+}
+
+func seg2segFunc(contacts []*Contact, _shapeA *SegmentShape, _shapeB *SegmentShape) int {
+	A1B1 := vect.Sub(_shapeA.B, _shapeA.A)
+	A1B2 := vect.Sub(_shapeB.B, _shapeA.A)
+	A1A2 := vect.Sub(_shapeB.A, _shapeA.A)
+
+	a := float32(vect.Cross(A1B1, A1B2) * vect.Cross(A1B1, A1A2))
+
+	A2B2 := vect.Sub(_shapeB.B, _shapeB.A)
+	A2B1 := vect.Sub(_shapeA.B, _shapeB.A)
+	A2A1 := vect.Sub(_shapeA.A, _shapeB.A)
+
+	b := float32(vect.Cross(A2B2, A2B1) * vect.Cross(A2B2, A2A1))
+
+	if a < 0.0 && b < 0.0 {
+		var l1, l2 Line
+		l1.Setup(_shapeA)
+		l2.Setup(_shapeB)
+		v1 := LineLine(&l1, &l2)
+		con := contacts[0]
+		con.reset(v1, _shapeA.Tn, 0.0, 0)
+		return 1
+	}
+	return 0
 }
 
 func seg2polyFunc(contacts []*Contact, seg *SegmentShape, poly *PolygonShape) int {
